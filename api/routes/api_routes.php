@@ -1,0 +1,9 @@
+<?php
+/* Add the undescore case of the controller, no need to specify crud operations*/
+$apiResources = [
+  "business_position"
+];
+api_resource($apiResources);
+
+
+?>
