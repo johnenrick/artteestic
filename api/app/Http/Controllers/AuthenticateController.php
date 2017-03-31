@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuthExceptions\JWTException;
 
-use App\User;
+use App\UserAuth;
 
 class AuthenticateController extends Controller
 {
@@ -20,7 +20,7 @@ class AuthenticateController extends Controller
    }
   public function index()
   {
-    $users = User::all();
+    $users = UserAuth::all();
     return $users;
   }
   public function refreshToken(){

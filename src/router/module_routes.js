@@ -3,13 +3,15 @@ import AUTH from 'services/auth'
 let beforeEnter = (to, from, next) => {
   // TODO Redirect if no token when token is required in meta.tokenRequired
   AUTH.currentPath = to.path
-  if(AUTH.user.userID){
+  if(AUTH.user.userID || to.meta.tokenRequired === false){
     next()
   }else{
     if(to.name !== 'login'){
-      next({
-        path: '/'
-      })
+      if(!AUTH.tokenData.verifyingToken){
+        next({
+          path: '/'
+        })
+      }
     }else{
       if(!AUTH.tokenData.verifyingToken){
         next()
@@ -27,6 +29,7 @@ export default{
         AUTH.currentPath = to.path
         if(AUTH.user.userID){
           let path = '/cashier'
+          console.log(AUTH.user.type)
           if(AUTH.user.type === 1){ // admin
             path = '/admin'
           }

@@ -2,28 +2,18 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends APIModel
 {
-    use Notifiable;
+    protected $hidden = array('password');
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    public function user_type()
+    {
+        return $this->belongsTo('App\UserType');
+    }
+    public function user_information()
+    {
+        return $this->belongsTo('App\UserInformation');
+    }
 }

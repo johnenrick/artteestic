@@ -49,7 +49,7 @@ export default {
     vue.APIRequest('authenticate', credentials, (response) => {
       this.setToken(response.token)
       vue.APIRequest('authenticate/user', {}, (userInfo) => {
-        this.setUser(userInfo.id, userInfo.username, userInfo.type)
+        this.setUser(userInfo.id, userInfo.username, userInfo.user_type_id)
         if(callback){
           callback(userInfo)
         }
@@ -68,7 +68,7 @@ export default {
       this.setToken(token)
       let vue = new Vue()
       vue.APIRequest('authenticate/user', {}, (userInfo) => {
-        this.setUser(userInfo.id, userInfo.username, userInfo.type)
+        this.setUser(userInfo.id, userInfo.username, userInfo.user_type_id)
         this.tokenData.verifyingToken = false
         if(this.currentPath){
           ROUTER.push({

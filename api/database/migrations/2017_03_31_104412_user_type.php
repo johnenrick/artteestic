@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddUsername extends Migration
+class UserType extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,11 @@ class AddUsername extends Migration
      */
     public function up()
     {
-      Schema::table('users', function (Blueprint $table) {
-          $table->char('username', 50)->after("id");
+      Schema::create('user_types', function (Blueprint $table) {
+          $table->increments('id');
+          $table->char('description', 20);
+          $table->timestamps();
+          $table->SoftDeletes();
       });
     }
 

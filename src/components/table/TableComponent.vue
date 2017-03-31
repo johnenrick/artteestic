@@ -110,6 +110,7 @@ export default {
       columnSettings: {},
       linearColumnSettings: {},
       filterSettings: {},
+      alwaysFilter: [],
       currentFilter: 0,
       filterValue: '',
       isLoading: [],
@@ -119,6 +120,7 @@ export default {
     }
   },
   props: {
+    table_setting: Object,
     column_setting: Array,
     filter_setting: Array,
     api: String,
@@ -211,6 +213,10 @@ export default {
           }
           requestOption.condition = [condition]
         }
+        if(this.table_setting.foreign_table){
+          console.log(this.table_setting.foreign_table)
+          requestOption.with_foreign_table = this.table_setting.foreign_table
+        }
         this.APIRequest(this.apiLink.retrieve, requestOption, (response) => {
           // success callback
           this.tableData = []
@@ -240,22 +246,27 @@ export default {
       }
       let filterSetting = this.filter_setting
       for(let x = 0; x < filterSetting.length; x++){
-        filterSetting[x]['db_name'] = (typeof filterSetting[x]['db_name'] === 'undefined') ? this.$options.filters.underscoreCase(filterSetting[x]['name']) : filterSetting[x]['db_name']
-        filterSetting[x]['placeholder'] = (typeof filterSetting[x]['placeholder'] === 'undefined') ? filterSetting[x]['name'] : filterSetting[x]['placeholder']
-        filterSetting[x]['type'] = (typeof filterSetting[x]['type'] === 'undefined') ? 'text' : filterSetting[x]['type']
-        if(typeof filterSetting[x]['clause'] === 'undefined'){
-
-          switch(filterSetting[x]['type']){
-            case 'text':
-              filterSetting[x]['clause'] = 'like'
-              break
-            default:
-              filterSetting[x]['clause'] = '='
-          }
+        if(filterSetting[x]['always']){
+          this.alwaysFilter[this.alwaysFilter.length][filterSetting[x]['name']] = filterSetting[x]['value']
         }else{
-          filterSetting[x]['clause'] = filterSetting[x]['clause']
+          filterSetting[x]['db_name'] = (typeof filterSetting[x]['db_name'] === 'undefined') ? this.$options.filters.underscoreCase(filterSetting[x]['name']) : filterSetting[x]['db_name']
+          filterSetting[x]['placeholder'] = (typeof filterSetting[x]['placeholder'] === 'undefined') ? filterSetting[x]['name'] : filterSetting[x]['placeholder']
+          filterSetting[x]['type'] = (typeof filterSetting[x]['type'] === 'undefined') ? 'text' : filterSetting[x]['type']
+          if(typeof filterSetting[x]['clause'] === 'undefined'){
+
+            switch(filterSetting[x]['type']){
+              case 'text':
+                filterSetting[x]['clause'] = 'like'
+                break
+              default:
+                filterSetting[x]['clause'] = '='
+            }
+          }else{
+            filterSetting[x]['clause'] = filterSetting[x]['clause']
+          }
+
+          Vue.set(filterSetting[x], 'value', (typeof filterSetting[x]['default'] === 'undefined') ? '' : filterSetting[x]['default'])
         }
-        Vue.set(filterSetting[x], 'value', (typeof filterSetting[x]['default'] === 'undefined') ? '' : filterSetting[x]['default'])
       }
       this.filterSettings = filterSetting
     },
@@ -340,6 +351,7 @@ export default {
     dataFormat(colName, colSetting, rowValue){
       let type = colSetting['type']
       let value = (typeof rowValue[colName] !== undefined) ? rowValue[colName] : null
+
       if(colName.indexOf('.') !== -1){
         let colNames = colName.split('.')
         let traverseColumn = rowValue

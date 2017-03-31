@@ -70,7 +70,7 @@
                     v-on:change="$emit('input-changed', inputSetting['db_name'], $event.target.value);"
                     v-bind:value="input_values[inputSetting['db_name']]"
                     v-bind:name="inputSetting['db_name']"
-                    type="text"
+                    v-bind:type="inputSetting['type']"
                     class="form-control"
                     v-bind:class="inputSetting['type']"
                     v-bind:placeholder="inputSetting['placeholder']"

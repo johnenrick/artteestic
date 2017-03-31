@@ -13,6 +13,7 @@
     <div class="col-sm-12">
       <table-component ref="tableComponent"
           v-on:row-clicked="viewEntry"
+          :table_setting="table_setting"
           :column_setting="column_setting"
           :filter_setting="filter_setting"
           :api="api">
@@ -40,6 +41,7 @@
     },
     props: {
       api: String,
+      table_setting: Object,
       filter_setting: Array,
       column_setting: Array,
       form_setting: Object,

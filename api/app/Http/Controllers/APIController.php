@@ -21,8 +21,9 @@ class APIController extends Controller
     protected $tableColumns = null;
     protected $notRequired = array();
     protected $defaultValue = array();
-    protected $requiredChildren = null;//children that are always retrieve, singular
-    protected $editableChildren = array();
+    protected $requiredForeignTable = null;//children that are always retrieve, singular
+    protected $editableForeignTable = array();
+    protected $foreignTable = array();
 
     public function test(){
 
@@ -119,8 +120,8 @@ class APIController extends Controller
       ;
       $this->model->save();
       $childID = array();
-      if($this->model->id && $this->editableChildren){
-        foreach($this->editableChildren as $childTable){
+      if($this->model->id && $this->editableForeignTable){
+        foreach($this->editableForeignTable as $childTable){
           if(isset($request[$childTable]) && $request[$childTable]){
             $child = $request[$childTable];
             if(count(array_filter(array_keys($child), 'is_string')) > 0){//associative
@@ -169,8 +170,19 @@ class APIController extends Controller
         (isset($request['limit'])) ? $this->model = $this->model->limit($request['limit']) : null;
       }
 
-      if($this->requiredChildren){
-        $this->model = $this->model->with($this->requiredChildren);
+      if($this->requiredForeignTable){
+        $this->model = $this->model->with($this->requiredForeignTable);
+      }
+      if(isset($request['with_foreign_table'])){
+        $foreignTable = array();
+        foreach($request['with_foreign_table'] as $tempForeignTable){
+          if(in_array($tempForeignTable, $this->foreignTable)){
+            $foreignTable[] = $tempForeignTable;
+          }
+        }
+        if(count($foreignTable)){
+          $this->model = $this->model->with($foreignTable);
+        }
       }
       if(isset($request['with_soft_delete'])){
         $this->model = $this->model->withTrashed();
@@ -204,9 +216,9 @@ class APIController extends Controller
       }
 
       $result = $this->model->save();
-      if($result && $this->editableChildren){
+      if($result && $this->editableForeignTable){
         $childID = array();
-        foreach($this->editableChildren as $childTable){
+        foreach($this->editableForeignTable as $childTable){
           if(isset($request[$childTable]) && $request[$childTable]){
             $child = $request[$childTable];
             if(count(array_filter(array_keys($child), 'is_string')) > 0){//associative
